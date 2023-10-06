@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"joubertredrat-tests/jobsity-dev-test-2k23/cmd"
+)
 
 func main() {
-	fmt.Println("hi")
+	cmd.Execute()
 }
