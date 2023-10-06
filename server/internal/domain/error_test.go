@@ -14,3 +14,12 @@ func TestErrInvalidEmail(t *testing.T) {
 
 	assert.Equal(t, errExpected, errGot.Error())
 }
+
+func TestErrInvalidPasswordLength(t *testing.T) {
+	expected := uint(8)
+	got := uint(6)
+	errExpected := "Invalid password length, expected [ 8 ], got [ 6 ]"
+	errGot := domain.NewErrInvalidPasswordLength(expected, got)
+
+	assert.Equal(t, errExpected, errGot.Error())
+}

@@ -22,6 +22,7 @@ func TestUser(t *testing.T) {
 			emailInput:    "foo@bar.tld",
 			passwordInput: "password",
 			userExpected: domain.User{
+				ID:       "",
 				Name:     "foo",
 				Email:    "foo@bar.tld",
 				Password: "password",
@@ -36,11 +37,19 @@ func TestUser(t *testing.T) {
 			userExpected:  domain.User{},
 			errExpected:   domain.NewErrInvalidEmail("foo.bar.tld"),
 		},
+		{
+			name:          "Test create user with invalid password",
+			nameInput:     "foo",
+			emailInput:    "foo@bar.tld",
+			passwordInput: "psswd",
+			userExpected:  domain.User{},
+			errExpected:   domain.NewErrInvalidPasswordLength(uint(domain.PASSWORD_MIN_LENGTH), uint(5)),
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			userGot, errGot := domain.NewUser(test.nameInput, test.emailInput, test.passwordInput)
+			userGot, errGot := domain.NewUser("", test.nameInput, test.emailInput, test.passwordInput)
 
 			assert.Equal(t, test.userExpected, userGot)
 			assert.Equal(t, test.errExpected, errGot)
