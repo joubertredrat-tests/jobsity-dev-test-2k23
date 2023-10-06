@@ -29,5 +29,5 @@ func (u UsecaseUserRegister) Execute(ctx context.Context, input UsecaseUserRegis
 		return domain.User{}, NewErrUserAlreadyRegistered(user.Email)
 	}
 
-	return u.userRepository.Persist(ctx, user)
+	return u.userRepository.Create(ctx, user)
 }

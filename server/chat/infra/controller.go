@@ -66,6 +66,10 @@ func (c UserController) HandleCreate(usecase application.UsecaseUserRegister) gi
 				ctx.JSON(http.StatusBadRequest, gin.H{
 					"error": err.Error(),
 				})
+			case application.ErrUserAlreadyRegistered:
+				ctx.JSON(http.StatusUnprocessableEntity, gin.H{
+					"error": err.Error(),
+				})
 			default:
 				ctx.JSON(http.StatusInternalServerError, gin.H{
 					"error": "internal server error",

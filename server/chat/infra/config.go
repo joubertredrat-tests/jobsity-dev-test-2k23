@@ -16,6 +16,7 @@ type Config struct {
 	ApiPort       string `env:"API_PORT,required"`
 	MongoHost     string `env:"MONGO_HOST,required"`
 	MongoPort     string `env:"MONGO_PORT,required"`
+	MongoDatabase string `env:"MONGO_DATABASE,required"`
 	MongoUser     string `env:"MONGO_USER,required"`
 	MongoPassword string `env:"MONGO_PASSWORD,required"`
 }

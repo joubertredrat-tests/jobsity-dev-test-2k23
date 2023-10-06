@@ -31,7 +31,7 @@ func TestUsecaseUserRegister(t *testing.T) {
 					Times(1)
 				repo.
 					EXPECT().
-					Persist(gomock.Any(), gomock.AssignableToTypeOf(domain.User{})).
+					Create(gomock.Any(), gomock.AssignableToTypeOf(domain.User{})).
 					Return(domain.User{
 						ID:       "ID",
 						Name:     "Sr Foo",
@@ -124,7 +124,7 @@ func TestUsecaseUserRegister(t *testing.T) {
 					Times(1)
 				repo.
 					EXPECT().
-					Persist(gomock.Any(), gomock.AssignableToTypeOf(domain.User{})).
+					Create(gomock.Any(), gomock.AssignableToTypeOf(domain.User{})).
 					Return(domain.User{}, errors.New("database gone")).
 					Times(1)
 

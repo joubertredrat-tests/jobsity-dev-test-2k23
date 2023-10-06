@@ -37,7 +37,7 @@ func getApiCommand() *cli.Command {
 				return err
 			}
 
-			userRepository := infra.NewUserRepository(mongo, logger)
+			userRepository := infra.NewUserRepository(mongo, config.MongoDatabase, logger)
 
 			usecaseUserRegister := application.NewUsecaseUserRegister(userRepository)
 
