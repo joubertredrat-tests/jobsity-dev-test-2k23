@@ -5,3 +5,8 @@ type UsecaseUserRegisterInput struct {
 	Email    string
 	Password string
 }
+
+type UsecaseUserLoginInput struct {
+	Email    string
+	Password string
+}

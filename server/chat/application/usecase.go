@@ -9,9 +9,9 @@ type UsecaseUserRegister struct {
 	userRepository domain.UserRepository
 }
 
-func NewUsecaseUserRegister(userRepository domain.UserRepository) UsecaseUserRegister {
+func NewUsecaseUserRegister(r domain.UserRepository) UsecaseUserRegister {
 	return UsecaseUserRegister{
-		userRepository: userRepository,
+		userRepository: r,
 	}
 }
 
@@ -30,4 +30,29 @@ func (u UsecaseUserRegister) Execute(ctx context.Context, input UsecaseUserRegis
 	}
 
 	return u.userRepository.Create(ctx, user)
+}
+
+type UsecaseUserLogin struct {
+	userRepository domain.UserRepository
+	tokenService   domain.TokenService
+}
+
+func NewUsecaseUserLogin(r domain.UserRepository, t domain.TokenService) UsecaseUserLogin {
+	return UsecaseUserLogin{
+		userRepository: r,
+		tokenService:   t,
+	}
+}
+
+func (u UsecaseUserLogin) Execute(ctx context.Context, input UsecaseUserLoginInput) (domain.UserToken, error) {
+	user, err := domain.NewUser("", "", input.Email, input.Password)
+	if err != nil {
+		return domain.UserToken{}, err
+	}
+	userGot, err := u.userRepository.GetAuthenticated(ctx, user)
+	if err != nil {
+		return domain.UserToken{}, err
+	}
+
+	return u.tokenService.Generate(ctx, userGot)
 }

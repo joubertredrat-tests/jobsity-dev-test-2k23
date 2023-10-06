@@ -54,6 +54,21 @@ func (mr *MockUserRepositoryMockRecorder) Create(ctx, user any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserRepository)(nil).Create), ctx, user)
 }
 
+// GetAuthenticated mocks base method.
+func (m *MockUserRepository) GetAuthenticated(ctx context.Context, user domain.User) (domain.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAuthenticated", ctx, user)
+	ret0, _ := ret[0].(domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAuthenticated indicates an expected call of GetAuthenticated.
+func (mr *MockUserRepositoryMockRecorder) GetAuthenticated(ctx, user any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAuthenticated", reflect.TypeOf((*MockUserRepository)(nil).GetAuthenticated), ctx, user)
+}
+
 // GetByEmail mocks base method.
 func (m *MockUserRepository) GetByEmail(ctx context.Context, email string) (domain.User, error) {
 	m.ctrl.T.Helper()

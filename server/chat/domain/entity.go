@@ -27,3 +27,13 @@ func NewUser(id, name, email, password string) (User, error) {
 		Password: password,
 	}, nil
 }
+
+type UserToken struct {
+	AccessToken string
+}
+
+func NewUserToken(accesToken string) UserToken {
+	return UserToken{
+		AccessToken: accesToken,
+	}
+}

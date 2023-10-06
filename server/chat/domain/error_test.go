@@ -23,3 +23,19 @@ func TestErrInvalidPasswordLength(t *testing.T) {
 
 	assert.Equal(t, errExpected, errGot.Error())
 }
+
+func TestErrUserNotFoundByEmail(t *testing.T) {
+	email := "foo@bar.tld"
+	errExpected := "User not found by e-mail [ foo@bar.tld ]"
+	errGot := domain.NewErrUserNotFoundByEmail(email)
+
+	assert.Equal(t, errExpected, errGot.Error())
+}
+
+func TestErrUserNotAuthenticated(t *testing.T) {
+	email := "foo@bar.tld"
+	errExpected := "User not authenticated by e-mail [ foo@bar.tld ]"
+	errGot := domain.NewErrUserNotAuthenticated(email)
+
+	assert.Equal(t, errExpected, errGot.Error())
+}
