@@ -11,3 +11,7 @@ type UserRegisterResponse struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type UserLoginResponse struct {
+	AccessToken string `json:"accessToken"`
+}

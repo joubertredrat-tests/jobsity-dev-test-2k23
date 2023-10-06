@@ -87,6 +87,48 @@ func (c UserController) HandleCreate(usecase application.UsecaseUserRegister) gi
 	}
 }
 
+func (c UserController) HandleLogin(usecase application.UsecaseUserLogin) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var request UserLoginRequest
+		if err := ctx.ShouldBindJSON(&request); err != nil {
+			responseWithError(ctx, err)
+			return
+		}
+
+		userToken, err := usecase.Execute(ctx, application.UsecaseUserLoginInput{
+			Email:    request.Email,
+			Password: request.Password,
+		})
+
+		if err != nil {
+			switch err.(type) {
+			case domain.ErrInvalidEmail,
+				domain.ErrInvalidPasswordLength:
+				ctx.JSON(http.StatusBadRequest, gin.H{
+					"error": err.Error(),
+				})
+			case domain.ErrUserNotFoundByEmail:
+				ctx.JSON(http.StatusNotFound, gin.H{
+					"error": err.Error(),
+				})
+			case domain.ErrUserNotAuthenticated:
+				ctx.JSON(http.StatusUnprocessableEntity, gin.H{
+					"error": err.Error(),
+				})
+			default:
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"error": "internal server error",
+				})
+			}
+			return
+		}
+
+		ctx.JSON(http.StatusOK, UserLoginResponse{
+			AccessToken: userToken.AccessToken,
+		})
+	}
+}
+
 func RegisterCustomValidator() {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterTagNameFunc(func(fld reflect.StructField) string {

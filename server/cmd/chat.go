@@ -36,10 +36,16 @@ func getApiCommand() *cli.Command {
 			if err != nil {
 				return err
 			}
+			tokenService := infra.NewTokenServiceJWT(
+				logger,
+				[]byte(config.JwtSecretKey),
+				config.JwtTokenExpirationHours,
+			)
 
 			userRepository := infra.NewUserRepository(mongo, config.MongoDatabase, logger)
 
 			usecaseUserRegister := application.NewUsecaseUserRegister(userRepository)
+			usecaseUserLogin := application.NewUsecaseUserLogin(userRepository, tokenService)
 
 			apiBaseController := infra.NewApiBaseController()
 			userController := infra.NewUserController()
@@ -54,6 +60,11 @@ func getApiCommand() *cli.Command {
 					"/register",
 					infra.JSONBodyMiddleware(),
 					userController.HandleCreate(usecaseUserRegister),
+				)
+				ra.POST(
+					"/login",
+					infra.JSONBodyMiddleware(),
+					userController.HandleLogin(usecaseUserLogin),
 				)
 			}
 

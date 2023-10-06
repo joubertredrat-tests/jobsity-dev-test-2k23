@@ -64,8 +64,8 @@ func (r UserRepositoryMongo) Create(ctx context.Context, user domain.User) (doma
 func (r UserRepositoryMongo) GetByEmail(ctx context.Context, email string) (domain.User, error) {
 	collection := r.collection()
 
-	var user UserMongo
-	err := collection.FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
+	var userMongo UserMongo
+	err := collection.FindOne(ctx, bson.D{{"email", email}}).Decode(&userMongo)
 	if err == mongo.ErrNoDocuments {
 		r.logger.Error(err)
 		return domain.User{}, nil
@@ -76,10 +76,38 @@ func (r UserRepositoryMongo) GetByEmail(ctx context.Context, email string) (doma
 	}
 
 	return domain.User{
-		ID:       user.ID.Hex(),
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: user.Password,
+		ID:       userMongo.ID.Hex(),
+		Name:     userMongo.Name,
+		Email:    userMongo.Email,
+		Password: userMongo.Password,
+	}, nil
+}
+
+func (r UserRepositoryMongo) GetAuthenticated(ctx context.Context, user domain.User) (domain.User, error) {
+	collection := r.collection()
+
+	var userMongo UserMongo
+	err := collection.FindOne(ctx, bson.D{{"email", user.Email}}).Decode(&userMongo)
+	if err == mongo.ErrNoDocuments {
+		r.logger.Error(err)
+		return domain.User{}, domain.NewErrUserNotFoundByEmail(user.Email)
+	}
+	if err != nil {
+		r.logger.Error(err)
+		return domain.User{}, err
+	}
+
+	errPass := bcrypt.CompareHashAndPassword([]byte(userMongo.Password), []byte(user.Password))
+	if errPass != nil {
+		r.logger.Error(err)
+		return domain.User{}, domain.NewErrUserNotAuthenticated(user.Email)
+	}
+
+	return domain.User{
+		ID:       userMongo.ID.Hex(),
+		Name:     userMongo.Name,
+		Email:    userMongo.Email,
+		Password: userMongo.Password,
 	}, nil
 }
 

@@ -12,13 +12,15 @@ const (
 )
 
 type Config struct {
-	ApiHost       string `env:"API_HOST,required"`
-	ApiPort       string `env:"API_PORT,required"`
-	MongoHost     string `env:"MONGO_HOST,required"`
-	MongoPort     string `env:"MONGO_PORT,required"`
-	MongoDatabase string `env:"MONGO_DATABASE,required"`
-	MongoUser     string `env:"MONGO_USER,required"`
-	MongoPassword string `env:"MONGO_PASSWORD,required"`
+	ApiHost                 string `env:"API_HOST,required"`
+	ApiPort                 string `env:"API_PORT,required"`
+	MongoHost               string `env:"MONGO_HOST,required"`
+	MongoPort               string `env:"MONGO_PORT,required"`
+	MongoDatabase           string `env:"MONGO_DATABASE,required"`
+	MongoUser               string `env:"MONGO_USER,required"`
+	MongoPassword           string `env:"MONGO_PASSWORD,required"`
+	JwtSecretKey            string `env:"JWT_SECRET_KEY,required"`
+	JwtTokenExpirationHours uint   `env:"JWT_TOKEN_EXPIRATION_HOURS,required"`
 }
 
 func NewConfig() (Config, error) {
