@@ -1,7 +1,7 @@
 package domain_test
 
 import (
-	"joubertredrat-tests/jobsity-dev-test-2k23/internal/domain"
+	"joubertredrat-tests/jobsity-dev-test-2k23/chat/domain"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

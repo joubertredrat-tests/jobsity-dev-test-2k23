@@ -2,7 +2,7 @@ package application
 
 import (
 	"context"
-	"joubertredrat-tests/jobsity-dev-test-2k23/internal/domain"
+	"joubertredrat-tests/jobsity-dev-test-2k23/chat/domain"
 )
 
 type UsecaseUserRegister struct {

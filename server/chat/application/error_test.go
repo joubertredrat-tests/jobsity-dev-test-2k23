@@ -1,7 +1,7 @@
 package application_test
 
 import (
-	"joubertredrat-tests/jobsity-dev-test-2k23/internal/application"
+	"joubertredrat-tests/jobsity-dev-test-2k23/chat/application"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

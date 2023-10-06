@@ -3,9 +3,9 @@ package application_test
 import (
 	"context"
 	"errors"
-	"joubertredrat-tests/jobsity-dev-test-2k23/internal/application"
-	"joubertredrat-tests/jobsity-dev-test-2k23/internal/domain"
-	"joubertredrat-tests/jobsity-dev-test-2k23/pkg/mock"
+	"joubertredrat-tests/jobsity-dev-test-2k23/chat/application"
+	"joubertredrat-tests/jobsity-dev-test-2k23/chat/domain"
+	"joubertredrat-tests/jobsity-dev-test-2k23/pkg/chat/mock"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
