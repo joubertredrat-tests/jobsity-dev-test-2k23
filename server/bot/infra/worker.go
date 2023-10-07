@@ -48,15 +48,14 @@ func (w BotWorker) Run(ctx context.Context) {
 		}
 
 		var command StockCommandReceived
-		err = json.Unmarshal([]byte(msg.Payload), &command)
-		if err != nil {
+		if err := json.Unmarshal([]byte(msg.Payload), &command); err != nil {
 			w.logger.Error(err)
 		}
 
-		stock, errUsecase := w.usecase.Execute(ctx, application.UsecaseGetStockValueInput{
+		stock, err := w.usecase.Execute(ctx, application.UsecaseGetStockValueInput{
 			Code: command.Code,
 		})
-		if errUsecase != nil {
+		if err != nil {
 			w.logger.Error(err)
 		}
 

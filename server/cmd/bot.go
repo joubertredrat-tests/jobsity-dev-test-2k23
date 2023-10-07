@@ -12,7 +12,7 @@ func getBotCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "bot",
 		Aliases: []string{},
-		Usage:   "Run bot worker to get stock values",
+		Usage:   "Run bot worker to get stock value",
 		Action: func(c *cli.Context) error {
 			ctx := context.TODO()
 
@@ -22,7 +22,6 @@ func getBotCommand() *cli.Command {
 			}
 
 			logger := infra.Logger()
-
 			redis := infra.RedisClient(config.RedisQueueHost, config.RedisQueuePort)
 
 			stockService := infra.NewStockQuoteStooq()
