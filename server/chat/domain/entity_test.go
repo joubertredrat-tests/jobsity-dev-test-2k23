@@ -23,7 +23,7 @@ func TestUser(t *testing.T) {
 			passwordInput: "password",
 			userExpected: domain.User{
 				ID:       "",
-				Name:     "foo",
+				Name:     "Mr Foo",
 				Email:    "foo@bar.tld",
 				Password: "password",
 			},
@@ -39,7 +39,7 @@ func TestUser(t *testing.T) {
 		},
 		{
 			name:          "Test create user with invalid password",
-			nameInput:     "foo",
+			nameInput:     "Mr Foo",
 			emailInput:    "foo@bar.tld",
 			passwordInput: "psswd",
 			userExpected:  domain.User{},

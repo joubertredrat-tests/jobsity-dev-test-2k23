@@ -16,3 +16,8 @@ type UsecaseMessageCreateInput struct {
 	UserEmail   string
 	MessageText string
 }
+
+type UsecaseMessagesListInput struct {
+	Page         uint
+	ItemsPerPage uint
+}

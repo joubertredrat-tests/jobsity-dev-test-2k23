@@ -7,6 +7,7 @@ import (
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/domain"
 	"joubertredrat-tests/jobsity-dev-test-2k23/pkg"
 	"joubertredrat-tests/jobsity-dev-test-2k23/pkg/chat/mock"
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -441,6 +442,132 @@ func TestUsecaseMessageCreate(t *testing.T) {
 			messageGot, errGot := usecase.Execute(ctx, test.input)
 
 			assert.Equal(t, test.messageExpected, messageGot)
+			assert.Equal(t, test.errExpected, errGot)
+		})
+	}
+}
+
+func TestUsecaseMessageList(t *testing.T) {
+	tests := []struct {
+		name                        string
+		messageRepositoryDependency func(ctrl *gomock.Controller) domain.MessageRepository
+		input                       application.UsecaseMessagesListInput
+		messagesExpected            []domain.Message
+		errExpected                 error
+	}{
+		{
+			name: "Test list messages with success",
+			messageRepositoryDependency: func(ctrl *gomock.Controller) domain.MessageRepository {
+				repo := mock.NewMockMessageRepository(ctrl)
+
+				datetime1 := "2023-10-07 14:27:51"
+				time1, _ := pkg.TimeFromCanonical(&datetime1)
+
+				datetime2 := "2023-10-07 12:57:06"
+				time2, _ := pkg.TimeFromCanonical(&datetime2)
+
+				repo.
+					EXPECT().
+					List(
+						gomock.AssignableToTypeOf(reflect.TypeOf((*context.Context)(nil)).Elem()),
+						gomock.AssignableToTypeOf(domain.Pagination{}),
+					).
+					Return([]domain.Message{
+						{
+							ID:        "ID2",
+							UserName:  "Mr Qux",
+							UserEmail: "qux@bar.tld",
+							Text:      "Me too",
+							Datetime:  *time2,
+						},
+						{
+							ID:        "ID1",
+							UserName:  "Sr Foo",
+							UserEmail: "foo@bar.tld",
+							Text:      "I like cookies",
+							Datetime:  *time1,
+						},
+					}, nil).
+					Times(1)
+
+				return repo
+			},
+			input: application.UsecaseMessagesListInput{
+				Page:         1,
+				ItemsPerPage: 50,
+			},
+			messagesExpected: func() []domain.Message {
+				datetime1 := "2023-10-07 14:27:51"
+				time1, _ := pkg.TimeFromCanonical(&datetime1)
+
+				datetime2 := "2023-10-07 12:57:06"
+				time2, _ := pkg.TimeFromCanonical(&datetime2)
+
+				return []domain.Message{
+					{
+						ID:        "ID2",
+						UserName:  "Mr Qux",
+						UserEmail: "qux@bar.tld",
+						Text:      "Me too",
+						Datetime:  *time2,
+					},
+					{
+						ID:        "ID1",
+						UserName:  "Sr Foo",
+						UserEmail: "foo@bar.tld",
+						Text:      "I like cookies",
+						Datetime:  *time1,
+					},
+				}
+			}(),
+			errExpected: nil,
+		},
+		{
+			name: "Test list messages with invalid page",
+			messageRepositoryDependency: func(ctrl *gomock.Controller) domain.MessageRepository {
+				return mock.NewMockMessageRepository(ctrl)
+			},
+			input: application.UsecaseMessagesListInput{
+				Page:         0,
+				ItemsPerPage: 50,
+			},
+			messagesExpected: []domain.Message{},
+			errExpected:      domain.NewErrPaginationPage(0),
+		},
+		{
+			name: "Test list messages with unknown error from message repository on list",
+			messageRepositoryDependency: func(ctrl *gomock.Controller) domain.MessageRepository {
+				repo := mock.NewMockMessageRepository(ctrl)
+
+				repo.
+					EXPECT().
+					List(
+						gomock.AssignableToTypeOf(reflect.TypeOf((*context.Context)(nil)).Elem()),
+						gomock.AssignableToTypeOf(domain.Pagination{}),
+					).
+					Return([]domain.Message{}, errDatabaseGone).
+					Times(1)
+
+				return repo
+			},
+			input: application.UsecaseMessagesListInput{
+				Page:         1,
+				ItemsPerPage: 50,
+			},
+			messagesExpected: []domain.Message{},
+			errExpected:      errDatabaseGone,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ctx := context.TODO()
+			ctrl := gomock.NewController(t)
+
+			usecase := application.NewUsecaseMessageList(test.messageRepositoryDependency(ctrl))
+			messagesGot, errGot := usecase.Execute(ctx, test.input)
+
+			assert.Equal(t, test.messagesExpected, messagesGot)
 			assert.Equal(t, test.errExpected, errGot)
 		})
 	}

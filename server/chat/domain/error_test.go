@@ -39,3 +39,17 @@ func TestErrUserNotAuthenticated(t *testing.T) {
 
 	assert.Equal(t, errExpected, errGot.Error())
 }
+
+func TestErrPaginationPage(t *testing.T) {
+	errExpected := "Invalid pagination page [ 0 ]"
+	errGot := domain.NewErrPaginationPage(0)
+
+	assert.Equal(t, errExpected, errGot.Error())
+}
+
+func TestErrPaginationItemsPerPage(t *testing.T) {
+	errExpected := "Invalid pagination items per page, expected between [ 10 ] and [ 100 ], got [ 107 ]"
+	errGot := domain.NewErrPaginationItemsPerPage(10, 100, 107)
+
+	assert.Equal(t, errExpected, errGot.Error())
+}

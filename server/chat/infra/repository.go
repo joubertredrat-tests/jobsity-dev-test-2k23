@@ -163,6 +163,10 @@ func (r MessageRepositoryMongo) Create(ctx context.Context, message domain.Messa
 	return message, nil
 }
 
+func (r MessageRepositoryMongo) List(ctx context.Context, pagination domain.Pagination) ([]domain.Message, error) {
+	return []domain.Message{}, nil
+}
+
 func (r MessageRepositoryMongo) collection() *mongo.Collection {
 	return r.mongoClient.Database(r.database).Collection(COLLECTION_MESSAGES)
 }

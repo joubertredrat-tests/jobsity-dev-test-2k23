@@ -84,3 +84,22 @@ func (u UsecaseMessageCreate) Execute(ctx context.Context, input UsecaseMessageC
 
 	return messageCreated, nil
 }
+
+type UsecaseMessagesList struct {
+	messageRepository domain.MessageRepository
+}
+
+func NewUsecaseMessageList(r domain.MessageRepository) UsecaseMessagesList {
+	return UsecaseMessagesList{
+		messageRepository: r,
+	}
+}
+
+func (u UsecaseMessagesList) Execute(ctx context.Context, input UsecaseMessagesListInput) ([]domain.Message, error) {
+	pagination, err := domain.NewPagination(input.Page, input.ItemsPerPage)
+	if err != nil {
+		return []domain.Message{}, err
+	}
+
+	return u.messageRepository.List(ctx, pagination)
+}

@@ -59,3 +59,40 @@ func NewErrUserNotAuthenticated(email string) ErrUserNotAuthenticated {
 func (e ErrUserNotAuthenticated) Error() string {
 	return fmt.Sprintf("User not authenticated by e-mail [ %s ]", e.email)
 }
+
+type ErrPaginationPage struct {
+	page uint
+}
+
+func NewErrPaginationPage(page uint) ErrPaginationPage {
+	return ErrPaginationPage{
+		page: page,
+	}
+}
+
+func (e ErrPaginationPage) Error() string {
+	return fmt.Sprintf("Invalid pagination page [ %d ]", e.page)
+}
+
+type ErrPaginationItemsPerPage struct {
+	min uint
+	max uint
+	got uint
+}
+
+func NewErrPaginationItemsPerPage(min, max, got uint) ErrPaginationItemsPerPage {
+	return ErrPaginationItemsPerPage{
+		min: min,
+		max: max,
+		got: got,
+	}
+}
+
+func (e ErrPaginationItemsPerPage) Error() string {
+	return fmt.Sprintf(
+		"Invalid pagination items per page, expected between [ %d ] and [ %d ], got [ %d ]",
+		e.min,
+		e.max,
+		e.got,
+	)
+}
