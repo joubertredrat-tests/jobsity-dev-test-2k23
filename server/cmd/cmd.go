@@ -10,7 +10,8 @@ import (
 func Execute() {
 	app := &cli.App{
 		Commands: []*cli.Command{
-			getApiCommand(),
+			getChatApiCommand(),
+			getBotCommand(),
 		},
 	}
 

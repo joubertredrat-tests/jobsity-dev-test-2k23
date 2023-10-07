@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func getApiCommand() *cli.Command {
+func getChatApiCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "chat",
 		Aliases: []string{},
