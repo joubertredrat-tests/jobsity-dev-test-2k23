@@ -29,9 +29,9 @@ func getBotCommand() *cli.Command {
 			stockEvent := infra.NewStockEventRedis(redis, logger, config.RedisQueueStockRequestedTopicName)
 
 			usecaseGetStockValue := application.NewUsecaseGetStockValue(stockService, stockEvent)
-			usecaseGetStockValue.Execute(ctx, application.UsecaseGetStockValueInput{
-				Code: "AAPL.US",
-			})
+
+			worker := infra.NewBotWorker(usecaseGetStockValue, redis, logger, config.RedisQueueStockCommandReceivedTopicName)
+			worker.Run(ctx)
 
 			return nil
 		},
