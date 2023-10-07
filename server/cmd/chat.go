@@ -36,6 +36,8 @@ func getApiCommand() *cli.Command {
 			if err != nil {
 				return err
 			}
+			redis := infra.RedisClient(config.RedisQueueHost, config.RedisQueuePort)
+
 			tokenService := infra.NewTokenServiceJWT(
 				logger,
 				config.JwtSecretKey,
@@ -44,7 +46,7 @@ func getApiCommand() *cli.Command {
 
 			userRepository := infra.NewUserRepository(mongo, config.MongoDatabase, logger)
 			messageRepository := infra.NewMessageRepository(mongo, config.MongoDatabase, logger)
-			messageEvent := infra.NewMessageEventRedis()
+			messageEvent := infra.NewMessageEventRedis(redis, logger, config.RedisQueueMessageCreatedTopicName)
 
 			usecaseUserRegister := application.NewUsecaseUserRegister(userRepository)
 			usecaseUserLogin := application.NewUsecaseUserLogin(userRepository, tokenService)
