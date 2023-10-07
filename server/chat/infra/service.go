@@ -20,10 +20,10 @@ type TokenServiceJWT struct {
 	tokenExpirationHours uint
 }
 
-func NewTokenServiceJWT(l *logrus.Logger, s []byte, t uint) domain.TokenService {
+func NewTokenServiceJWT(l *logrus.Logger, k string, t uint) domain.TokenService {
 	return TokenServiceJWT{
 		logger:               l,
-		jwtSecretKey:         s,
+		jwtSecretKey:         []byte(k),
 		tokenExpirationHours: t,
 	}
 }

@@ -1,6 +1,9 @@
 package domain
 
-import "net/mail"
+import (
+	"net/mail"
+	"time"
+)
 
 const PASSWORD_MIN_LENGTH = 8
 
@@ -36,4 +39,26 @@ func NewUserToken(accesToken string) UserToken {
 	return UserToken{
 		AccessToken: accesToken,
 	}
+}
+
+type Message struct {
+	ID        string
+	UserName  string
+	UserEmail string
+	Text      string
+	Datetime  time.Time
+}
+
+func NewMessage(id, userName, userEmail, text string) (Message, error) {
+	_, err := mail.ParseAddress(userEmail)
+	if err != nil {
+		return Message{}, NewErrInvalidEmail(userEmail)
+	}
+
+	return Message{
+		ID:        id,
+		UserName:  userName,
+		UserEmail: userEmail,
+		Text:      text,
+	}, nil
 }

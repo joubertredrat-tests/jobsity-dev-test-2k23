@@ -38,7 +38,7 @@ func getApiCommand() *cli.Command {
 			}
 			tokenService := infra.NewTokenServiceJWT(
 				logger,
-				[]byte(config.JwtSecretKey),
+				config.JwtSecretKey,
 				config.JwtTokenExpirationHours,
 			)
 

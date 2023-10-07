@@ -7,3 +7,7 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (User, error)
 	GetAuthenticated(ctx context.Context, user User) (User, error)
 }
+
+type MessageRepository interface {
+	Create(ctx context.Context, message Message) (Message, error)
+}
