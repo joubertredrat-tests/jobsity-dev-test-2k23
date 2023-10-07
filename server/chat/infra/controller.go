@@ -8,12 +8,20 @@ import (
 	"joubertredrat-tests/jobsity-dev-test-2k23/pkg"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+)
+
+const (
+	QUERY_STRING_PAGE                 = "page"
+	QUERY_STRING_ITEMS_PER_PAGE       = "itemsPerPage"
+	DEFAULT_PAGINATION_PAGE           = 1
+	DEFAULT_PAGINATION_ITEMS_PER_PAGE = 50
 )
 
 type ApiBaseController struct {
@@ -178,6 +186,56 @@ func (c MessagesController) HandleCreate(usecase application.UsecaseMessageCreat
 			Datetime:    pkg.DatetimeCanonical(&message.Datetime),
 		})
 	}
+}
+
+func (c MessagesController) HandleList(usecase application.UsecaseMessagesList) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		page := stringToUint(
+			ctx.DefaultQuery(QUERY_STRING_PAGE, fmt.Sprintf("%d", DEFAULT_PAGINATION_PAGE)),
+		)
+		itemsPerPage := stringToUint(
+			ctx.DefaultQuery(QUERY_STRING_ITEMS_PER_PAGE, fmt.Sprintf("%d", DEFAULT_PAGINATION_ITEMS_PER_PAGE)),
+		)
+
+		messages, err := usecase.Execute(ctx, application.UsecaseMessagesListInput{
+			Page:         page,
+			ItemsPerPage: itemsPerPage,
+		})
+
+		if err != nil {
+			switch err.(type) {
+			case domain.ErrPaginationPage,
+				domain.ErrPaginationItemsPerPage:
+				ctx.JSON(http.StatusBadRequest, gin.H{
+					"error": err.Error(),
+				})
+			default:
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"error": "internal server error",
+				})
+			}
+			return
+		}
+
+		response := []MessageResponse{}
+
+		for _, message := range messages {
+			response = append(response, MessageResponse{
+				ID:          message.ID,
+				UserName:    message.UserName,
+				UserEmail:   message.UserEmail,
+				MessageText: message.Text,
+				Datetime:    pkg.DatetimeCanonical(&message.Datetime),
+			})
+		}
+
+		ctx.JSON(http.StatusOK, response)
+	}
+}
+
+func stringToUint(s string) uint {
+	i, _ := strconv.Atoi(s)
+	return uint(i)
 }
 
 func RegisterCustomValidator() {

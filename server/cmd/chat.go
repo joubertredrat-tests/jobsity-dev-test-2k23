@@ -49,6 +49,7 @@ func getApiCommand() *cli.Command {
 			usecaseUserRegister := application.NewUsecaseUserRegister(userRepository)
 			usecaseUserLogin := application.NewUsecaseUserLogin(userRepository, tokenService)
 			usecaseMessageCreate := application.NewUsecaseMessageCreate(messageRepository, messageEvent)
+			usecaseMessagesList := application.NewUsecaseMessageList(messageRepository)
 
 			apiBaseController := infra.NewApiBaseController()
 			userController := infra.NewUserController()
@@ -75,6 +76,11 @@ func getApiCommand() *cli.Command {
 					infra.JwtCheckMiddleware(tokenService),
 					infra.JSONBodyMiddleware(),
 					messagesController.HandleCreate(usecaseMessageCreate),
+				)
+				ra.GET(
+					"/messages",
+					infra.JwtCheckMiddleware(tokenService),
+					messagesController.HandleList(usecaseMessagesList),
 				)
 			}
 

@@ -2,6 +2,7 @@ package infra
 
 import (
 	"context"
+	"fmt"
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/domain"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -164,7 +166,54 @@ func (r MessageRepositoryMongo) Create(ctx context.Context, message domain.Messa
 }
 
 func (r MessageRepositoryMongo) List(ctx context.Context, pagination domain.Pagination) ([]domain.Message, error) {
-	return []domain.Message{}, nil
+	collection := r.collection()
+	pageOptions := skipLimit(pagination)
+
+	sort := bson.D{}
+	sort = append(sort, bson.E{"datetime", -1})
+	pageOptions.SetSort(sort)
+
+	cursor, err := collection.Find(ctx, bson.D{{}}, pageOptions)
+	if err != nil {
+		fmt.Println(err)
+		r.logger.Error(err)
+		return []domain.Message{}, err
+	}
+	defer cursor.Close(ctx)
+
+	list := []domain.Message{}
+
+	for cursor.Next(ctx) {
+		var messageMongo MessageMongo
+		if err := cursor.Decode(&messageMongo); err != nil {
+			fmt.Println(err)
+			r.logger.Error(err)
+			return []domain.Message{}, err
+		}
+		list = append(list, domain.Message{
+			ID:        messageMongo.AppID,
+			UserName:  messageMongo.UserName,
+			UserEmail: messageMongo.UserEmail,
+			Text:      messageMongo.Text,
+			Datetime:  messageMongo.Datetime,
+		})
+	}
+
+	if err := cursor.Err(); err != nil {
+		fmt.Println(err)
+		r.logger.Error(err)
+		return []domain.Message{}, err
+	}
+
+	return list, nil
+}
+
+func skipLimit(pagination domain.Pagination) *options.FindOptions {
+	pageOptions := options.Find()
+	pageOptions.SetSkip(int64(pagination.Page - 1))
+	pageOptions.SetLimit(int64(pagination.ItemsPerPage))
+
+	return pageOptions
 }
 
 func (r MessageRepositoryMongo) collection() *mongo.Collection {
