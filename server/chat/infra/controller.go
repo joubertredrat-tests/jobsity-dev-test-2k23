@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/application"
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/domain"
+	"joubertredrat-tests/jobsity-dev-test-2k23/pkg"
 	"net/http"
 	"reflect"
 	"strings"
@@ -26,7 +27,7 @@ func (c ApiBaseController) HandleStatus(ctx *gin.Context) {
 	t := time.Now()
 	ctx.JSON(http.StatusOK, gin.H{
 		"status": "ok",
-		"time":   DatetimeCanonical(&t),
+		"time":   pkg.DatetimeCanonical(&t),
 	})
 }
 
@@ -34,7 +35,7 @@ func (c ApiBaseController) HandleNotFound(ctx *gin.Context) {
 	t := time.Now()
 	ctx.JSON(http.StatusNotFound, gin.H{
 		"error": "page not found",
-		"time":  DatetimeCanonical(&t),
+		"time":  pkg.DatetimeCanonical(&t),
 	})
 }
 
@@ -125,6 +126,56 @@ func (c UserController) HandleLogin(usecase application.UsecaseUserLogin) gin.Ha
 
 		ctx.JSON(http.StatusOK, UserLoginResponse{
 			AccessToken: userToken.AccessToken,
+		})
+	}
+}
+
+type MessagesController struct {
+}
+
+func NewMessagesController() MessagesController {
+	return MessagesController{}
+}
+
+func (c MessagesController) HandleCreate(usecase application.UsecaseMessageCreate) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var request MessageCreateRequest
+		if err := ctx.ShouldBindJSON(&request); err != nil {
+			responseWithError(ctx, err)
+			return
+		}
+
+		var user, ok = ctx.Get("userAuth")
+		if !ok {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "internal server error",
+			})
+			return
+		}
+		userAuth := user.(domain.User)
+
+		message, err := usecase.Execute(ctx, application.UsecaseMessageCreateInput{
+			UserName:    userAuth.Name,
+			UserEmail:   userAuth.Email,
+			MessageText: request.MessageText,
+		})
+
+		if err != nil {
+			switch err.(type) {
+			default:
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"error": "internal server error",
+				})
+			}
+			return
+		}
+
+		ctx.JSON(http.StatusCreated, MessageResponse{
+			ID:          message.ID,
+			UserName:    message.UserName,
+			UserEmail:   message.UserEmail,
+			MessageText: message.Text,
+			Datetime:    pkg.DatetimeCanonical(&message.Datetime),
 		})
 	}
 }

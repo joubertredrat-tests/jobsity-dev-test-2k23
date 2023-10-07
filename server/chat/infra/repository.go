@@ -3,7 +3,9 @@ package infra
 import (
 	"context"
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/domain"
+	"time"
 
+	"github.com/oklog/ulid/v2"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,20 +14,21 @@ import (
 )
 
 const (
-	COLLECTION_USERS = "users"
+	COLLECTION_USERS    = "users"
+	COLLECTION_MESSAGES = "messages"
 )
-
-type UserRepositoryMongo struct {
-	mongoClient *mongo.Client
-	database    string
-	logger      *logrus.Logger
-}
 
 type UserMongo struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty"`
 	Name     string             `bson:"name"`
 	Email    string             `bson:"email"`
 	Password string             `bson:"password"`
+}
+
+type UserRepositoryMongo struct {
+	mongoClient *mongo.Client
+	database    string
+	logger      *logrus.Logger
 }
 
 func NewUserRepository(c *mongo.Client, d string, l *logrus.Logger) domain.UserRepository {
@@ -113,6 +116,55 @@ func (r UserRepositoryMongo) GetAuthenticated(ctx context.Context, user domain.U
 
 func (r UserRepositoryMongo) collection() *mongo.Collection {
 	return r.mongoClient.Database(r.database).Collection(COLLECTION_USERS)
+}
+
+type MessageMongo struct {
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	AppID     string             `bson:"appId"`
+	UserName  string             `bson:"name"`
+	UserEmail string             `bson:"email"`
+	Text      string             `bson:"text"`
+	Datetime  time.Time          `bson:"datetime"`
+}
+
+type MessageRepositoryMongo struct {
+	mongoClient *mongo.Client
+	database    string
+	logger      *logrus.Logger
+}
+
+func NewMessageRepository(c *mongo.Client, d string, l *logrus.Logger) domain.MessageRepository {
+	return MessageRepositoryMongo{
+		mongoClient: c,
+		database:    d,
+		logger:      l,
+	}
+}
+
+func (r MessageRepositoryMongo) Create(ctx context.Context, message domain.Message) (domain.Message, error) {
+	collection := r.collection()
+
+	messageMongo := MessageMongo{
+		AppID:     ulid.Make().String(),
+		UserName:  message.UserName,
+		UserEmail: message.UserEmail,
+		Text:      message.Text,
+		Datetime:  time.Now(),
+	}
+
+	_, err := collection.InsertOne(ctx, messageMongo)
+	if err != nil {
+		r.logger.Error(err)
+		return domain.Message{}, err
+	}
+
+	message.ID = messageMongo.AppID
+	message.Datetime = messageMongo.Datetime
+	return message, nil
+}
+
+func (r MessageRepositoryMongo) collection() *mongo.Collection {
+	return r.mongoClient.Database(r.database).Collection(COLLECTION_MESSAGES)
 }
 
 func hashPassword(password []byte) (string, error) {

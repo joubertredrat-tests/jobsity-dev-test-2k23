@@ -43,12 +43,16 @@ func getApiCommand() *cli.Command {
 			)
 
 			userRepository := infra.NewUserRepository(mongo, config.MongoDatabase, logger)
+			messageRepository := infra.NewMessageRepository(mongo, config.MongoDatabase, logger)
+			messageEvent := infra.NewMessageEventRedis()
 
 			usecaseUserRegister := application.NewUsecaseUserRegister(userRepository)
 			usecaseUserLogin := application.NewUsecaseUserLogin(userRepository, tokenService)
+			usecaseMessageCreate := application.NewUsecaseMessageCreate(messageRepository, messageEvent)
 
 			apiBaseController := infra.NewApiBaseController()
 			userController := infra.NewUserController()
+			messagesController := infra.NewMessagesController()
 
 			r.NoRoute(apiBaseController.HandleNotFound)
 
@@ -65,6 +69,12 @@ func getApiCommand() *cli.Command {
 					"/login",
 					infra.JSONBodyMiddleware(),
 					userController.HandleLogin(usecaseUserLogin),
+				)
+				ra.POST(
+					"/messages",
+					infra.JwtCheckMiddleware(tokenService),
+					infra.JSONBodyMiddleware(),
+					messagesController.HandleCreate(usecaseMessageCreate),
 				)
 			}
 

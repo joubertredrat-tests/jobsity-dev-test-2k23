@@ -2,6 +2,7 @@ package infra
 
 import (
 	"context"
+	"errors"
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/domain"
 	"time"
 
@@ -9,8 +10,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var errInvalidJwtToken = errors.New("Invalid JWT token")
+
 type Claims struct {
-	Email string `json:"email"`
+	UserName  string `json:"userName"`
+	UserEmail string `json:"userEmail"`
 	jwt.RegisteredClaims
 }
 
@@ -32,7 +36,8 @@ func (s TokenServiceJWT) Generate(ctx context.Context, user domain.User) (domain
 	expirationTime := time.Now().Add(time.Duration(s.tokenExpirationHours) * time.Hour)
 
 	claims := &Claims{
-		Email: user.Email,
+		UserName:  user.Name,
+		UserEmail: user.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -44,4 +49,22 @@ func (s TokenServiceJWT) Generate(ctx context.Context, user domain.User) (domain
 	}
 
 	return domain.NewUserToken(tokenString), nil
+}
+
+func (s TokenServiceJWT) Check(ctx context.Context, userToken domain.UserToken) (domain.User, error) {
+	claims := &Claims{}
+
+	token, err := jwt.ParseWithClaims(userToken.AccessToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return s.jwtSecretKey, nil
+	})
+	if err != nil {
+		s.logger.Error(err)
+		return domain.User{}, errInvalidJwtToken
+	}
+
+	if !token.Valid {
+		return domain.User{}, errInvalidJwtToken
+	}
+
+	return domain.NewUser("", claims.UserName, claims.UserEmail, "")
 }

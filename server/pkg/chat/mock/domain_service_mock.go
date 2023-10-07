@@ -39,6 +39,21 @@ func (m *MockTokenService) EXPECT() *MockTokenServiceMockRecorder {
 	return m.recorder
 }
 
+// Check mocks base method.
+func (m *MockTokenService) Check(ctx context.Context, userToken domain.UserToken) (domain.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Check", ctx, userToken)
+	ret0, _ := ret[0].(domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Check indicates an expected call of Check.
+func (mr *MockTokenServiceMockRecorder) Check(ctx, userToken any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Check", reflect.TypeOf((*MockTokenService)(nil).Check), ctx, userToken)
+}
+
 // Generate mocks base method.
 func (m *MockTokenService) Generate(ctx context.Context, user domain.User) (domain.UserToken, error) {
 	m.ctrl.T.Helper()

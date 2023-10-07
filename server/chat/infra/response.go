@@ -15,3 +15,11 @@ type UserRegisterResponse struct {
 type UserLoginResponse struct {
 	AccessToken string `json:"accessToken"`
 }
+
+type MessageResponse struct {
+	ID          string  `json:"id"`
+	UserName    string  `json:"userName"`
+	UserEmail   string  `json:"userEmail"`
+	MessageText string  `json:"messageText"`
+	Datetime    *string `json:"datetime"`
+}
