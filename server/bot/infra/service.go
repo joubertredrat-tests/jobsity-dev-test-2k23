@@ -15,6 +15,7 @@ const (
 	URL_FORMAT      = "https://stooq.com/q/l/?s=%s&f=sd2t2ohlcv&h&e=csv"
 	CSV_RESULT_LINE = 1
 	CSV_VALUE_COLUM = 3
+	STOCK_NO_QUOTE  = "N/D"
 )
 
 type StockQuoteStooq struct {
@@ -45,7 +46,7 @@ func (s StockQuoteStooq) Get(ctx context.Context, stock domain.Stock) (domain.St
 	}
 
 	value := records[CSV_RESULT_LINE][CSV_VALUE_COLUM]
-	if value != "N/D" {
+	if value != STOCK_NO_QUOTE {
 		value = fmt.Sprintf("$%s", value)
 	}
 

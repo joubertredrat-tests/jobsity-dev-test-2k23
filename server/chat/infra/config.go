@@ -22,6 +22,7 @@ type Config struct {
 	RedisQueueHost                          string `env:"REDIS_QUEUE_HOST,required"`
 	RedisQueuePort                          string `env:"REDIS_QUEUE_PORT,required"`
 	RedisQueueStockCommandReceivedTopicName string `env:"REDIS_QUEUE_STOCK_COMMAND_RECEIVED_TOPIC_NAME,required"`
+	RedisQueueStockRequestedTopicName       string `env:"REDIS_QUEUE_STOCK_REQUESTED_TOPIC_NAME,required"`
 	JwtSecretKey                            string `env:"JWT_SECRET_KEY,required"`
 	JwtTokenExpirationHours                 uint   `env:"JWT_TOKEN_EXPIRATION_HOURS,required"`
 }

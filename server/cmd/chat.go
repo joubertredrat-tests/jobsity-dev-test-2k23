@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/application"
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/infra"
@@ -85,6 +86,15 @@ func getChatApiCommand() *cli.Command {
 					messagesController.HandleList(usecaseMessagesList),
 				)
 			}
+
+			worker := infra.NewStockWorker(
+				usecaseMessageCreate,
+				redis,
+				logger,
+				config.RedisQueueStockRequestedTopicName,
+			)
+
+			go worker.Run(context.TODO())
 
 			return r.Run(fmt.Sprintf("%s:%s", config.ApiHost, config.ApiPort))
 		},
