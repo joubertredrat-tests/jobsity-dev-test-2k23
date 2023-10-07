@@ -56,3 +56,31 @@ func (u UsecaseUserLogin) Execute(ctx context.Context, input UsecaseUserLoginInp
 
 	return u.tokenService.Generate(ctx, userGot)
 }
+
+type UsecaseMessageCreate struct {
+	messageRepository domain.MessageRepository
+	messageEvent      domain.MessageEvent
+}
+
+func NewUsecaseMessageCreate(r domain.MessageRepository, e domain.MessageEvent) UsecaseMessageCreate {
+	return UsecaseMessageCreate{
+		messageRepository: r,
+		messageEvent:      e,
+	}
+}
+
+func (u UsecaseMessageCreate) Execute(ctx context.Context, input UsecaseMessageCreateInput) (domain.Message, error) {
+	message, err := domain.NewMessage("", input.UserName, input.UserEmail, input.MessageText)
+	if err != nil {
+		return domain.Message{}, err
+	}
+
+	messageCreated, err := u.messageRepository.Create(ctx, message)
+	if err != nil {
+		return domain.Message{}, err
+	}
+
+	u.messageEvent.Created(ctx, messageCreated)
+
+	return messageCreated, nil
+}

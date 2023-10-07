@@ -83,3 +83,41 @@ func (mr *MockUserRepositoryMockRecorder) GetByEmail(ctx, email any) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEmail", reflect.TypeOf((*MockUserRepository)(nil).GetByEmail), ctx, email)
 }
+
+// MockMessageRepository is a mock of MessageRepository interface.
+type MockMessageRepository struct {
+	ctrl     *gomock.Controller
+	recorder *MockMessageRepositoryMockRecorder
+}
+
+// MockMessageRepositoryMockRecorder is the mock recorder for MockMessageRepository.
+type MockMessageRepositoryMockRecorder struct {
+	mock *MockMessageRepository
+}
+
+// NewMockMessageRepository creates a new mock instance.
+func NewMockMessageRepository(ctrl *gomock.Controller) *MockMessageRepository {
+	mock := &MockMessageRepository{ctrl: ctrl}
+	mock.recorder = &MockMessageRepositoryMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockMessageRepository) EXPECT() *MockMessageRepositoryMockRecorder {
+	return m.recorder
+}
+
+// Create mocks base method.
+func (m *MockMessageRepository) Create(ctx context.Context, message domain.Message) (domain.Message, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", ctx, message)
+	ret0, _ := ret[0].(domain.Message)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockMessageRepositoryMockRecorder) Create(ctx, message any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockMessageRepository)(nil).Create), ctx, message)
+}

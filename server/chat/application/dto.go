@@ -10,3 +10,9 @@ type UsecaseUserLoginInput struct {
 	Email    string
 	Password string
 }
+
+type UsecaseMessageCreateInput struct {
+	UserName    string
+	UserEmail   string
+	MessageText string
+}
