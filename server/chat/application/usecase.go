@@ -75,14 +75,16 @@ func (u UsecaseMessageCreate) Execute(ctx context.Context, input UsecaseMessageC
 		return domain.Message{}, err
 	}
 
-	messageCreated, err := u.messageRepository.Create(ctx, message)
-	if err != nil {
-		return domain.Message{}, err
+	if message.StockCommand() {
+		err := u.messageEvent.StockCommandReceived(ctx, message)
+		if err != nil {
+			return domain.Message{}, err
+		}
+
+		return message, nil
 	}
 
-	u.messageEvent.Created(ctx, messageCreated)
-
-	return messageCreated, nil
+	return u.messageRepository.Create(ctx, message)
 }
 
 type UsecaseMessagesList struct {

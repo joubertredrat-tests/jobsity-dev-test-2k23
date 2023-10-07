@@ -178,7 +178,12 @@ func (c MessagesController) HandleCreate(usecase application.UsecaseMessageCreat
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, MessageResponse{
+		statusCode := http.StatusCreated
+		if message.StockCommand() {
+			statusCode = http.StatusAccepted
+		}
+
+		ctx.JSON(statusCode, MessageResponse{
 			ID:          message.ID,
 			UserName:    message.UserName,
 			UserEmail:   message.UserEmail,

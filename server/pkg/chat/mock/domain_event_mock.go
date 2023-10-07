@@ -39,17 +39,16 @@ func (m *MockMessageEvent) EXPECT() *MockMessageEventMockRecorder {
 	return m.recorder
 }
 
-// Created mocks base method.
-func (m *MockMessageEvent) Created(ctx context.Context, message domain.Message) (domain.Message, error) {
+// StockCommandReceived mocks base method.
+func (m *MockMessageEvent) StockCommandReceived(ctx context.Context, message domain.Message) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Created", ctx, message)
-	ret0, _ := ret[0].(domain.Message)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "StockCommandReceived", ctx, message)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
-// Created indicates an expected call of Created.
-func (mr *MockMessageEventMockRecorder) Created(ctx, message any) *gomock.Call {
+// StockCommandReceived indicates an expected call of StockCommandReceived.
+func (mr *MockMessageEventMockRecorder) StockCommandReceived(ctx, message any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Created", reflect.TypeOf((*MockMessageEvent)(nil).Created), ctx, message)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StockCommandReceived", reflect.TypeOf((*MockMessageEvent)(nil).StockCommandReceived), ctx, message)
 }

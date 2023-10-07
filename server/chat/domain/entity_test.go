@@ -97,3 +97,40 @@ func TestMessage(t *testing.T) {
 		})
 	}
 }
+
+func TestMessageStock(t *testing.T) {
+	tests := []struct {
+		name                 string
+		userNameInput        string
+		userEmailInput       string
+		textInput            string
+		stockCommandExpected bool
+		stockCodeExpected    string
+	}{
+		{
+			name:                 "Test create default message with success",
+			userNameInput:        "Mr Foo",
+			userEmailInput:       "foo@bar.tld",
+			textInput:            "I like cookies",
+			stockCommandExpected: false,
+			stockCodeExpected:    "",
+		},
+		{
+			name:                 "Test create command message with success",
+			userNameInput:        "Mr Foo",
+			userEmailInput:       "foo@bar.tld",
+			textInput:            "/stock=APPL.US",
+			stockCommandExpected: true,
+			stockCodeExpected:    "APPL.US",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			messageGot, _ := domain.NewMessage("", test.userNameInput, test.userEmailInput, test.textInput)
+
+			assert.Equal(t, test.stockCommandExpected, messageGot.StockCommand())
+			assert.Equal(t, test.stockCodeExpected, messageGot.StockCode())
+		})
+	}
+}

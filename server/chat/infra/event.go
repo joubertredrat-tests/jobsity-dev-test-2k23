@@ -4,18 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/domain"
-	"joubertredrat-tests/jobsity-dev-test-2k23/pkg"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 )
 
-type MessageCreated struct {
-	ID          string  `json:"id"`
-	UserName    string  `json:"userName"`
-	UserEmail   string  `json:"userEmail"`
-	MessageText string  `json:"messageText"`
-	Datetime    *string `json:"datetime"`
+type StockCommandReceived struct {
+	Code       string `json:"code"`
+	RawCommand string `json:"rawCommand"`
 }
 
 type MessageEventRedis struct {
@@ -32,23 +28,20 @@ func NewMessageEventRedis(c *redis.Client, l *logrus.Logger, mct string) Message
 	}
 }
 
-func (e MessageEventRedis) Created(ctx context.Context, message domain.Message) (domain.Message, error) {
-	payload, err := json.Marshal(MessageCreated{
-		ID:          message.ID,
-		UserName:    message.UserName,
-		UserEmail:   message.UserEmail,
-		MessageText: message.Text,
-		Datetime:    pkg.DatetimeCanonical(&message.Datetime),
+func (e MessageEventRedis) StockCommandReceived(ctx context.Context, message domain.Message) error {
+	payload, err := json.Marshal(StockCommandReceived{
+		Code:       message.StockCode(),
+		RawCommand: message.Text,
 	})
 	if err != nil {
 		e.logger.Error(err)
-		return domain.Message{}, err
+		return err
 	}
 
 	if err := e.redisClient.Publish(context.Background(), e.messageCreatedTopicName, payload).Err(); err != nil {
 		e.logger.Error(err)
-		return domain.Message{}, err
+		return err
 	}
 
-	return message, nil
+	return nil
 }

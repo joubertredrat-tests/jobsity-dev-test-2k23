@@ -328,7 +328,7 @@ func TestUsecaseMessageCreate(t *testing.T) {
 		errExpected                 error
 	}{
 		{
-			name: "Test create message with success",
+			name: "Test create normal message with success",
 			messageRepositoryDependency: func(ctrl *gomock.Controller) domain.MessageRepository {
 				repo := mock.NewMockMessageRepository(ctrl)
 
@@ -350,24 +350,7 @@ func TestUsecaseMessageCreate(t *testing.T) {
 				return repo
 			},
 			messageEventDependency: func(ctrl *gomock.Controller) domain.MessageEvent {
-				event := mock.NewMockMessageEvent(ctrl)
-
-				datetime := "2023-10-07 14:27:51"
-				time, _ := pkg.TimeFromCanonical(&datetime)
-
-				event.
-					EXPECT().
-					Created(gomock.Any(), gomock.AssignableToTypeOf(domain.Message{})).
-					Return(domain.Message{
-						ID:        "ID",
-						UserName:  "Sr Foo",
-						UserEmail: "foo@bar.tld",
-						Text:      "I like cookies",
-						Datetime:  *time,
-					}, nil).
-					Times(1)
-
-				return event
+				return mock.NewMockMessageEvent(ctrl)
 			},
 			input: application.UsecaseMessageCreateInput{
 				UserName:    "Sr Foo",
@@ -386,6 +369,34 @@ func TestUsecaseMessageCreate(t *testing.T) {
 					Datetime:  *time,
 				}
 			}(),
+			errExpected: nil,
+		},
+		{
+			name: "Test receive command message with success",
+			messageRepositoryDependency: func(ctrl *gomock.Controller) domain.MessageRepository {
+				return mock.NewMockMessageRepository(ctrl)
+			},
+			messageEventDependency: func(ctrl *gomock.Controller) domain.MessageEvent {
+				event := mock.NewMockMessageEvent(ctrl)
+
+				event.
+					EXPECT().
+					StockCommandReceived(gomock.Any(), gomock.AssignableToTypeOf(domain.Message{})).
+					Return(nil).
+					Times(1)
+
+				return event
+			},
+			input: application.UsecaseMessageCreateInput{
+				UserName:    "Sr Foo",
+				UserEmail:   "foo@bar.tld",
+				MessageText: "/stock=APPL.US",
+			},
+			messageExpected: domain.Message{
+				UserName:  "Sr Foo",
+				UserEmail: "foo@bar.tld",
+				Text:      "/stock=APPL.US",
+			},
 			errExpected: nil,
 		},
 		{
@@ -427,6 +438,30 @@ func TestUsecaseMessageCreate(t *testing.T) {
 			},
 			messageExpected: domain.Message{},
 			errExpected:     errDatabaseGone,
+		},
+		{
+			name: "Test receive command message with unknown error from message event on stock command received",
+			messageRepositoryDependency: func(ctrl *gomock.Controller) domain.MessageRepository {
+				return mock.NewMockMessageRepository(ctrl)
+			},
+			messageEventDependency: func(ctrl *gomock.Controller) domain.MessageEvent {
+				event := mock.NewMockMessageEvent(ctrl)
+
+				event.
+					EXPECT().
+					StockCommandReceived(gomock.Any(), gomock.AssignableToTypeOf(domain.Message{})).
+					Return(errors.New("message broker is not connected")).
+					Times(1)
+
+				return event
+			},
+			input: application.UsecaseMessageCreateInput{
+				UserName:    "Sr Foo",
+				UserEmail:   "foo@bar.tld",
+				MessageText: "/stock=APPL.US",
+			},
+			messageExpected: domain.Message{},
+			errExpected:     errors.New("message broker is not connected"),
 		},
 	}
 

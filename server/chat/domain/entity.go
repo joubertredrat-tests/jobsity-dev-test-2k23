@@ -2,10 +2,14 @@ package domain
 
 import (
 	"net/mail"
+	"strings"
 	"time"
 )
 
-const PASSWORD_MIN_LENGTH = 8
+const (
+	PASSWORD_MIN_LENGTH        = 8
+	MESSAGE_TEXT_STOCK_COMMAND = "/stock="
+)
 
 type User struct {
 	ID       string
@@ -61,4 +65,16 @@ func NewMessage(id, userName, userEmail, text string) (Message, error) {
 		UserEmail: userEmail,
 		Text:      text,
 	}, nil
+}
+
+func (m Message) StockCommand() bool {
+	return strings.HasPrefix(m.Text, MESSAGE_TEXT_STOCK_COMMAND)
+}
+
+func (m Message) StockCode() string {
+	if !m.StockCommand() {
+		return ""
+	}
+
+	return strings.ReplaceAll(m.Text, MESSAGE_TEXT_STOCK_COMMAND, "")
 }
