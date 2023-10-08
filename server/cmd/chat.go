@@ -6,6 +6,7 @@ import (
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/application"
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/infra"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/urfave/cli/v2"
 )
@@ -25,6 +26,9 @@ func getChatApiCommand() *cli.Command {
 			if err := r.SetTrustedProxies(nil); err != nil {
 				return err
 			}
+			corsConfig := cors.DefaultConfig()
+			corsConfig.AllowOrigins = []string{"http://0.0.0.0:9090", "http://127.0.0.1:9090"}
+			r.Use(cors.New(corsConfig))
 
 			logger := infra.Logger()
 			dsn := infra.MongoDSN(

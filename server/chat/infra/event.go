@@ -20,7 +20,7 @@ type MessageEventRedis struct {
 	messageCreatedTopicName string
 }
 
-func NewMessageEventRedis(c *redis.Client, l *logrus.Logger, mct string) MessageEventRedis {
+func NewMessageEventRedis(c *redis.Client, l *logrus.Logger, mct string) domain.MessageEvent {
 	return MessageEventRedis{
 		redisClient:             c,
 		logger:                  l,

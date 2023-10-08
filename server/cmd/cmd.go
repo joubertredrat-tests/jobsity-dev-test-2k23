@@ -12,6 +12,7 @@ func Execute() {
 		Commands: []*cli.Command{
 			getChatApiCommand(),
 			getBotCommand(),
+			getWebCommand(),
 		},
 	}
 
