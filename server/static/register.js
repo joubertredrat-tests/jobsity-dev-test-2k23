@@ -1,38 +1,45 @@
 $(document).ready(function() {
   addFormValidation();
 
-  $('#login').submit(function(e) {
-    const isValid = $('#login').form('validate form');
+  $('#register').submit(function(e) {
+    const isValid = $('#register').form('validate form');
     if (!isValid) {
       return false;
     }
     e.preventDefault();
-    ajaxLogin();
+    ajaxRegister();
   });
 });//$(document).ready
 
-function ajaxLogin() {
+function ajaxRegister() {
   jsonData = {
+    name: $('#name').val(),
     email: $('#email').val(),
     password: $('#password').val()
   };
 
   $.ajax({
     type: 'POST',
-    url: 'http://127.0.0.1:9001/api/login',
+    url: 'http://127.0.0.1:9001/api/register',
     data: JSON.stringify(jsonData),
     contentType: 'application/json',
     encode: true,
     success: function (data, textStatus, xhr) {
-      document.cookie = "chatToken=" + data.accessToken;
-      window.location.replace("/chat");
+      window.location.replace("/login");
     },
     statusCode: {
+      400: function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Some fields are filled with wrong data, try again'
+        });
+      },
       422: function() {
         Swal.fire({
           icon: 'error',
           title: 'Error!',
-          text: 'Your e-mail or password is wrong, try again'
+          text: 'E-mail filled already registered, try login'
         });
       },
       500: function() {
@@ -47,10 +54,19 @@ function ajaxLogin() {
 }//ajaxLogin
 
 function addFormValidation() {
-  $('#login')
+  $('#register')
     .form({
       on: 'submit',
       fields: {
+        name: {
+          identifier: 'name',
+          rules: [
+            {
+              type: 'empty',
+              prompt: 'Fill your name'
+            }
+          ]
+        },
         email: {
           identifier: 'email',
           rules: [

@@ -28,6 +28,8 @@ func getWebCommand() *cli.Command {
 			r.LoadHTMLGlob("static/*.html")
 			r.StaticFile("/favicon.ico", "static/favicon.ico")
 			r.StaticFile("/login.js", "static/login.js")
+			r.StaticFile("/register.js", "static/register.js")
+			r.StaticFile("/chat.js", "static/chat.js")
 			r.GET("/login", func(c *gin.Context) {
 				chatToken, _ := c.Cookie("chatToken")
 				if chatToken != "" {
