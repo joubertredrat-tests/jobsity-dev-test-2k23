@@ -24,7 +24,7 @@ function ajaxLogin() {
     contentType: 'application/json',
     encode: true,
     success: function (data, textStatus, xhr) {
-      document.cookie = "chatToken=" + data.accessToken;
+      document.cookie = 'chatToken=' + data.accessToken;
       window.location.replace("/chat");
     },
     statusCode: {

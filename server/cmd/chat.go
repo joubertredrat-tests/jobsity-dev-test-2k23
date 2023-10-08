@@ -28,6 +28,8 @@ func getChatApiCommand() *cli.Command {
 			}
 			corsConfig := cors.DefaultConfig()
 			corsConfig.AllowOrigins = []string{"http://0.0.0.0:9090", "http://127.0.0.1:9090"}
+			corsConfig.AllowMethods = []string{"GET", "POST", "OPTIONS"}
+			corsConfig.AllowHeaders = []string{"Origin", "Authorization"}
 			r.Use(cors.New(corsConfig))
 
 			logger := infra.Logger()

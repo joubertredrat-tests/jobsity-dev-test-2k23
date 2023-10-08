@@ -9,6 +9,8 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+const CHAT_TOKEN_COOKIE = "chatToken"
+
 func getWebCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "web",
@@ -31,7 +33,7 @@ func getWebCommand() *cli.Command {
 			r.StaticFile("/register.js", "static/register.js")
 			r.StaticFile("/chat.js", "static/chat.js")
 			r.GET("/login", func(c *gin.Context) {
-				chatToken, _ := c.Cookie("chatToken")
+				chatToken, _ := c.Cookie(CHAT_TOKEN_COOKIE)
 				if chatToken != "" {
 					c.Redirect(http.StatusTemporaryRedirect, "/chat")
 					return
@@ -40,7 +42,7 @@ func getWebCommand() *cli.Command {
 				c.HTML(http.StatusOK, "login.html", nil)
 			})
 			r.GET("/register", func(c *gin.Context) {
-				chatToken, _ := c.Cookie("chatToken")
+				chatToken, _ := c.Cookie(CHAT_TOKEN_COOKIE)
 				if chatToken != "" {
 					c.Redirect(http.StatusTemporaryRedirect, "/chat")
 					return
@@ -49,7 +51,7 @@ func getWebCommand() *cli.Command {
 				c.HTML(http.StatusOK, "register.html", nil)
 			})
 			r.GET("/chat", func(c *gin.Context) {
-				_, err := c.Cookie("chatToken")
+				_, err := c.Cookie(CHAT_TOKEN_COOKIE)
 				if err != nil {
 					c.Redirect(http.StatusTemporaryRedirect, "/login")
 					return

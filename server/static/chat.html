@@ -1,1 +1,43 @@
-<h1>Chat</h1>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.js"></script>
+    <script src="./chat.js"></script>
+  </head>
+  <body>
+    <div class="ui menu fixed">
+      <a class="item">Chat</a>
+      <div class="ui dropdown item right">
+        <span id="userName">User</span><i class="dropdown icon"></i>
+        <div class="menu">
+          <a class="item">Logoff</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="ui grid app">
+      <div class="fourteen wide centered column">
+        <br/>
+        <div id="chat">
+
+        </div>
+        <br/>
+        <br/>
+      </div>
+    </div>
+
+    <div class="ui menu centered fluid wrapping bottom fixed">
+      <a class="item full">
+        <div class="ui action input">
+          <input type="text" placeholder="Your message...">
+          <div class="ui primary button">Send</div>
+        </div>
+      </a>
+    </div>
+  </body>
+</html>
