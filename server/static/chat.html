@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.18/dist/sweetalert2.all.min.js"></script>
     <script src="./chat.js"></script>
   </head>
   <body>
@@ -15,7 +16,7 @@
       <div class="ui dropdown item right">
         <span id="userName">User</span><i class="dropdown icon"></i>
         <div class="menu">
-          <a class="item">Logoff</a>
+          <a class="item" id="logoff">Logoff</a>
         </div>
       </div>
     </div>
@@ -34,8 +35,8 @@
     <div class="ui menu centered fluid wrapping bottom fixed">
       <a class="item full">
         <div class="ui action input">
-          <input type="text" placeholder="Your message...">
-          <div class="ui primary button">Send</div>
+          <input type="text" id="messagetext" placeholder="Your message...">
+          <div class="ui primary button" id="sendmessage">Send</div>
         </div>
       </a>
     </div>

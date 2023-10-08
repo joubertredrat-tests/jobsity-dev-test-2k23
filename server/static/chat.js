@@ -4,6 +4,18 @@ $(document).ready(function() {
   $('#userName').html(token.userName);
   ajaxMessages();
   setInterval(ajaxMessages, 1000);
+  $('#messagetext').keydown(function(e) {
+    const keycode = (e.keyCode ? e.keyCode : e.which);
+    if (keycode == '13') {
+      ajaxSendMessage();
+    }
+  });
+  $('#sendmessage').bind('click', function () {
+    ajaxSendMessage();
+  });
+  $('#logoff').bind('click', function () {
+    logoff();
+  });
 });//$(document).ready
 
 function parseJwt(token) {
@@ -43,6 +55,37 @@ function ajaxMessages() {
   });
 }//ajaxMessages
 
+function ajaxSendMessage() {
+  if ($('#messagetext').val() == "") {
+    return;
+  }
+
+  jsonData = {
+    messageText: $('#messagetext').val()
+  };
+
+  $.ajax({
+    type: 'POST',
+    url: 'http://127.0.0.1:9001/api/messages',
+    data: JSON.stringify(jsonData),
+    contentType: 'application/json',
+    headers: {'Authorization': 'Bearer ' + getCookie('chatToken')},
+    encode: true,
+    success: function (data, textStatus, xhr) {
+      $('#messagetext').val('');
+    },
+    statusCode: {
+      500: function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Anything wrong is not right, try again later'
+        });
+      }
+    }
+  });
+}//ajaxSendMessage
+
 function buildChat(messages) {
   messages.reverse().forEach(function(message) {
     if (messageExists(message.id)) {
@@ -71,6 +114,11 @@ function getMessageHtmlRelatedClass(userEmail) {
   const token = parseJwt(getCookie('chatToken'));
   return token.userEmail == userEmail ? 'olive' : 'grey';
 }//getMessageHtmlRelatedClass
+
+function logoff() {
+  document.cookie = 'chatToken=; Max-Age=-99999999;';
+  window.location.replace('/login');
+}//logoff
 
 function formatDate(date) {
   if (date == null){

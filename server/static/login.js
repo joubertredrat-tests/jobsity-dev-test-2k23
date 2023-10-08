@@ -25,7 +25,7 @@ function ajaxLogin() {
     encode: true,
     success: function (data, textStatus, xhr) {
       document.cookie = 'chatToken=' + data.accessToken;
-      window.location.replace("/chat");
+      window.location.replace('/chat');
     },
     statusCode: {
       422: function() {
