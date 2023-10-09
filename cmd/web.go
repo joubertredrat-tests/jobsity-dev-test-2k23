@@ -32,6 +32,10 @@ func getWebCommand() *cli.Command {
 			r.StaticFile("/login.js", "static/login.js")
 			r.StaticFile("/register.js", "static/register.js")
 			r.StaticFile("/chat.js", "static/chat.js")
+
+			r.GET("", func(c *gin.Context) {
+				c.Redirect(http.StatusTemporaryRedirect, "/chat")
+			})
 			r.GET("/login", func(c *gin.Context) {
 				chatToken, _ := c.Cookie(CHAT_TOKEN_COOKIE)
 				if chatToken != "" {

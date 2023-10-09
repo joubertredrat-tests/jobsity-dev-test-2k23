@@ -12,9 +12,8 @@ const (
 )
 
 type Config struct {
-	WebHost     string `env:"WEB_HOST,required"`
-	WebPort     string `env:"WEB_PORT,required"`
-	ChatApiHost string `env:"CHAT_API_HOST,required"`
+	WebHost string `env:"WEB_HOST,required"`
+	WebPort string `env:"WEB_PORT,required"`
 }
 
 func NewConfig() (Config, error) {
