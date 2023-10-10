@@ -2,7 +2,6 @@ package infra
 
 import (
 	"context"
-	"fmt"
 	"joubertredrat-tests/jobsity-dev-test-2k23/chat/domain"
 	"time"
 
@@ -175,7 +174,6 @@ func (r MessageRepositoryMongo) List(ctx context.Context, pagination domain.Pagi
 
 	cursor, err := collection.Find(ctx, bson.D{{}}, pageOptions)
 	if err != nil {
-		fmt.Println(err)
 		r.logger.Error(err)
 		return []domain.Message{}, err
 	}
@@ -186,7 +184,6 @@ func (r MessageRepositoryMongo) List(ctx context.Context, pagination domain.Pagi
 	for cursor.Next(ctx) {
 		var messageMongo MessageMongo
 		if err := cursor.Decode(&messageMongo); err != nil {
-			fmt.Println(err)
 			r.logger.Error(err)
 			return []domain.Message{}, err
 		}
@@ -200,7 +197,6 @@ func (r MessageRepositoryMongo) List(ctx context.Context, pagination domain.Pagi
 	}
 
 	if err := cursor.Err(); err != nil {
-		fmt.Println(err)
 		r.logger.Error(err)
 		return []domain.Message{}, err
 	}
